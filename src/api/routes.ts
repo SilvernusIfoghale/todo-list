@@ -1,4 +1,4 @@
-import client from "./Client";
+import client from "./client";
 
 const makeApiRequest = async (
   method: string,
