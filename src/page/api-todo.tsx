@@ -1,64 +1,73 @@
 import React, { useEffect, useState } from "react";
-import { deleteTodo, getTodo, patchTodo, postTodo } from "../api/routes";
+import {
+  deleteTodo,
+  getTodo,
+  patchTodo,
+  postTodo,
+  putTodo,
+} from "../api/routes";
 
 import { PiPencilSimple } from "react-icons/pi";
 import { RiDeleteBin5Line } from "react-icons/ri";
 
 interface todosProps {
   completed: boolean;
-  id: number;
-  title: string;
-  userId: number;
+  _id: string;
+  todo: string;
 }
 
 const ApiTodo: React.FC = () => {
   const [todos, setTodos] = useState<todosProps[]>([]);
-  const [pagination, setPagination] = useState(1);
+  // const [pagination, setPagination] = useState(1);
   const [modal, setModal] = useState(false);
   const [note, setNote] = useState("");
   const [isEditing, setIsEditing] = useState(false);
+  const [isEditingId, setIsEditingId] = useState<string | undefined>();
 
   // ===============================      lOAD/Pagination       ==========================
+
+  const fetchPosts = async () => {
+    const response = await getTodo();
+    if (response) {
+      const data = response.data.allTodos;
+      setTodos(data);
+    }
+  };
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await getTodo(pagination);
-      if (response) {
-        setTodos(response.data);
-      }
-    };
     fetchPosts();
-  }, [pagination]);
+  }, []);
 
   // ===============================      post/patch Todo       ==========================
-  const handlePostTodo = async (id?: number | undefined) => {
+  const handlePostTodo = async () => {
     if (note.trim() === "") {
       return;
     }
 
-    //PATCH
-    if (isEditing) {
+    //PUT
+    if (isEditing && isEditingId) {
       const prepareData = {
-        title: note,
+        todo: note,
         completed: false,
       };
 
-      const response = await patchTodo(prepareData, id);
+      const response = await putTodo(prepareData, isEditingId);
       if (response) {
-        console.log(response.data);
+        fetchPosts();
+
         alert("Updated Successfully ✅");
       }
     }
     //POST
     else {
       const prepareData = {
-        userId: (Math.random() * 2) / 4,
-        title: note,
+        todo: note,
         completed: false,
       };
 
       const response = await postTodo(prepareData);
       if (response) {
-        console.log(response.data);
+        fetchPosts();
+
         alert("Added Successfully ✅");
       }
     }
@@ -68,28 +77,39 @@ const ApiTodo: React.FC = () => {
   };
 
   // ===============================      Delete Todo        ==========================
-  const handleDeleteTodo = async (id: number) => {
-    const response = await deleteTodo(id);
-    if (response) {
-      console.log(response.data);
-      alert("Deleted Successfully ✅");
+  const handleDeleteTodo = async (id: string) => {
+    const choice = confirm("Are you sure you want to delete this todo note?");
+    if (choice) {
+      const response = await deleteTodo(id);
+      if (response) {
+        fetchPosts();
+        // console.log(response.data);
+        alert("Deleted Successfully ✅");
+      }
     }
   };
-  // ===============================      Update Todo        ==========================
-  const handleEditTodo = async (id: number) => {
+  // ===============================
+  // ....................................................................... Update Todo        ==========================
+  const handleEditTodo = async (id: string) => {
+    setIsEditingId(id);
     setIsEditing(true);
-    const editingTodo = todos.filter((todo) => todo.id === id);
-    setNote(editingTodo[0].title);
+    const editingTodo = todos.filter((todo) => todo._id === id);
+    setNote(editingTodo[0].todo);
     setModal(true);
   };
 
   // ===============================     isCompleted Function        ==========================
-  const handleCompleted = (id: number) => {
-    setTodos(
-      todos.map((todo) =>
-        todo.id === id ? { ...todo, completed: !todo.completed } : todo
-      )
-    );
+  const handleCompleted = async (id: string, completed: boolean) => {
+    const prepareData = { completed: !completed };
+    const response = await patchTodo(prepareData, id);
+    if (response) {
+      fetchPosts();
+    }
+    // setTodos(
+    //   todos.map((item) =>
+    //     item._id === id ? { ...item, completed: !item.completed } : item
+    //   )
+    // );
   };
 
   return (
@@ -108,32 +128,32 @@ const ApiTodo: React.FC = () => {
       </div>
       {/* ===============================       Todos      ========================== */}
       <div className="flex flex-col items-center justify-center  ">
-        {todos.map((todo, index) => (
+        {todos.map((item, index) => (
           <div className="w-[90%] sm:w-[80%] my-3" key={index}>
             <div className="flex items-center justify-between gap-3 border-b pb-1 border-[#534CC2] group">
               <div className="flex gap-3 items-center">
                 <input
                   type="checkbox"
                   className="h-5 w-5"
-                  checked={todo.completed}
-                  onChange={() => handleCompleted(todo.id)}
+                  checked={item.completed}
+                  onChange={() => handleCompleted(item._id, item.completed)}
                 />
                 <p
                   className={`${
-                    todo.completed === true && "text-gray-400 line-through"
+                    item.completed === true && "text-gray-400 line-through"
                   } font-semibold text-lg `}
                 >
-                  {todo.title}
+                  {item.todo}
                 </p>
               </div>
               <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100">
                 <PiPencilSimple
                   className="text-gray-400  hover:text-[#6C63FF] cursor-pointer"
-                  onClick={() => handleEditTodo(todo.id)}
+                  onClick={() => handleEditTodo(item._id)}
                 />
                 <RiDeleteBin5Line
                   className="text-gray-400 hover:text-red-500 cursor-pointer"
-                  onClick={() => handleDeleteTodo(todo.id)}
+                  onClick={() => handleDeleteTodo(item._id)}
                 />
               </div>
             </div>
@@ -142,7 +162,7 @@ const ApiTodo: React.FC = () => {
       </div>
 
       {/* ====================== Pagination =========================== */}
-      <div className="text-center flex justify-center items-center my-5">
+      {/* <div className="text-center flex justify-center items-center my-5">
         <ul className="flex flex-wrap justify-center items-center gap-4">
           {Array.from({ length: 10 }, (_, index) => index + 1).map(
             (num, index) => (
@@ -158,7 +178,7 @@ const ApiTodo: React.FC = () => {
             )
           )}
         </ul>
-      </div>
+      </div> */}
 
       {/* ================ Add New Todo Modal ================ */}
       <div

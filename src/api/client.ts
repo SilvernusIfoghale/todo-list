@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "https://jsonplaceholder.typicode.com";
+const BASE_URL = "https://todo-api-endpoint.onrender.com";
 
 const client = axios.create({
   baseURL: BASE_URL,
