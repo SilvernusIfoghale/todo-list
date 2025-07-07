@@ -146,7 +146,7 @@ const ApiTodo: React.FC = () => {
                   {item.todo}
                 </p>
               </div>
-              <div className="flex items-center gap-3 sm:opacity-0 group-hover:opacity-100">
+              <div className="flex items-center gap-3 md:opacity-0 group-hover:opacity-100">
                 <PiPencilSimple
                   className="text-gray-400  hover:text-[#6C63FF] cursor-pointer"
                   onClick={() => handleEditTodo(item._id)}
