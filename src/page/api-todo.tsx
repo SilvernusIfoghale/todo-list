@@ -100,16 +100,17 @@ const ApiTodo: React.FC = () => {
 
   // ===============================     isCompleted Function        ==========================
   const handleCompleted = async (id: string, completed: boolean) => {
+    setTodos(
+      todos.map((item) =>
+        item._id === id ? { ...item, completed: !item.completed } : item
+      )
+    );
+
     const prepareData = { completed: !completed };
     const response = await patchTodo(prepareData, id);
     if (response) {
       fetchPosts();
     }
-    // setTodos(
-    //   todos.map((item) =>
-    //     item._id === id ? { ...item, completed: !item.completed } : item
-    //   )
-    // );
   };
 
   return (
