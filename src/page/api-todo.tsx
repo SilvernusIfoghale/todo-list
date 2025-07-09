@@ -9,6 +9,7 @@ import {
 
 import { PiPencilSimple } from "react-icons/pi";
 import { RiDeleteBin5Line } from "react-icons/ri";
+import AddTodoModal from "./components/add-todo-modal";
 
 interface todosProps {
   completed: boolean;
@@ -162,56 +163,14 @@ const ApiTodo: React.FC = () => {
         ))}
       </div>
 
-      {/* ====================== Pagination =========================== */}
-      {/* <div className="text-center flex justify-center items-center my-5">
-        <ul className="flex flex-wrap justify-center items-center gap-4">
-          {Array.from({ length: 10 }, (_, index) => index + 1).map(
-            (num, index) => (
-              <li
-                key={index}
-                className={`${
-                  pagination == num ? "bg-blue-500" : ""
-                } cursor-pointer bg-blue-200 p-2 rounded-full w-10 h-10 hover:bg-blue-400`}
-                onClick={() => setPagination(num)}
-              >
-                {num}
-              </li>
-            )
-          )}
-        </ul>
-      </div> */}
-
       {/* ================ Add New Todo Modal ================ */}
-      <div
-        className={` absolute bg-black/50  h-[180vh] sm:h-[150vh] w-full top-0 ${
-          modal ? "flex" : "hidden"
-        }  pt-80 justify-center`}
-      >
-        <div className="bg-white h-1/3 w-[90%] sm:w-[500px] rounded-xl p-5 relative">
-          <h1 className="text-xl font-semibold text-center ">NEW NOTE</h1>
-          <input
-            type="text"
-            value={note}
-            onChange={(e) => setNote(e.target.value)}
-            placeholder="Input your note..."
-            className={`w-full  p-2 mt-5 outline-0 border border-[#6C63FF] rounded `}
-          />
-          <div className="absolute bottom-5 flex justify-between w-[91%] ">
-            <button
-              className="border  border-[#6C63FF] py-1 px-5 rounded text-[#6C63FF] cursor-pointer hover:scale-105 duration-500"
-              onClick={() => setModal(false)}
-            >
-              CANCEL
-            </button>
-            <button
-              className="bg-[#6C63FF] py-1 px-5 rounded text-white cursor-pointer hover:bg-[#534CC2]"
-              onClick={() => handlePostTodo()}
-            >
-              APPLY
-            </button>
-          </div>
-        </div>
-      </div>
+      <AddTodoModal
+        note={note}
+        modal={modal}
+        setNote={setNote}
+        setModal={setModal}
+        handlePostTodo={handlePostTodo}
+      />
     </>
   );
 };

@@ -99,6 +99,25 @@ const Todo: React.FC<TodoProps> = ({
               </div>
             </div>
           ))}
+
+          {/* ====================== Pagination =========================== */}
+          {/* <div className="text-center flex justify-center items-center my-5">
+        <ul className="flex flex-wrap justify-center items-center gap-4">
+          {Array.from({ length: 10 }, (_, index) => index + 1).map(
+            (num, index) => (
+              <li
+                key={index}
+                className={`${
+                  pagination == num ? "bg-blue-500" : ""
+                } cursor-pointer bg-blue-200 p-2 rounded-full w-10 h-10 hover:bg-blue-400`}
+                onClick={() => setPagination(num)}
+              >
+                {num}
+              </li>
+            )
+          )}
+        </ul>
+      </div> */}
         </>
       )}
     </>
