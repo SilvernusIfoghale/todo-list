@@ -86,7 +86,7 @@ const Todo: React.FC<TodoProps> = ({
                     {todo.text}
                   </p>
                 </div>
-                <div className="flex items-center gap-3 opacity-0 group-hover:opacity-100">
+                <div className="flex items-center gap-3 lg:opacity-0 group-hover:opacity-100">
                   <PiPencilSimple
                     className="text-gray-400  hover:text-[#6C63FF] cursor-pointer"
                     onClick={() => handleEdit(todo.id)}
